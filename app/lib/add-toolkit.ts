@@ -75,22 +75,23 @@ export async function addToolkitToRepo(
   });
   const baseSha = refData.object.sha;
 
-  const treeItems = await Promise.all(
-    files.map(async (file) => {
-      const { data: blob } = await octokit.rest.git.createBlob({
-        owner,
-        repo,
-        content: file.content,
-        encoding: "utf-8",
-      });
-      return {
-        path: file.path,
-        mode: "100644" as const,
-        type: "blob" as const,
-        sha: blob.sha,
-      };
-    })
-  );
+  // Created sequentially, not via Promise.all: GitHub's secondary rate limit
+  // rejects large bursts of concurrent requests, and this toolkit is ~170 files.
+  const treeItems: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
+  for (const file of files) {
+    const { data: blob } = await octokit.rest.git.createBlob({
+      owner,
+      repo,
+      content: file.content,
+      encoding: "utf-8",
+    });
+    treeItems.push({
+      path: file.path,
+      mode: "100644",
+      type: "blob",
+      sha: blob.sha,
+    });
+  }
 
   const { data: tree } = await octokit.rest.git.createTree({
     owner,
