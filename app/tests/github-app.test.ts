@@ -39,7 +39,11 @@ describe("getInstallationOctokit", () => {
     await getInstallationOctokit(456);
 
     expect(appConstructor).toHaveBeenCalledTimes(1);
-    expect(appConstructor).toHaveBeenCalledWith({ appId: "1", privateKey: "fake-key" });
+    expect(appConstructor).toHaveBeenCalledWith({
+      appId: "1",
+      privateKey: "fake-key",
+      Octokit: expect.any(Function),
+    });
     expect(getInstallationOctokitMock).toHaveBeenNthCalledWith(1, 123);
     expect(getInstallationOctokitMock).toHaveBeenNthCalledWith(2, 456);
   });
