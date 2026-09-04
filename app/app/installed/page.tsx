@@ -43,7 +43,7 @@ function InstalledPageContent() {
           <span className={styles.badge}>stellar-build</span>
           <h1 className={styles.title}>Missing installation</h1>
           <p className={styles.notice}>
-            Missing installation_id — install the app from the landing page
+            Missing installation_id. Install the app from the landing page
             first.
           </p>
         </div>
