@@ -8,6 +8,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "installation_id is required" }, { status: 400 });
   }
   const octokit = await getInstallationOctokit(Number(installationId));
-  const repos = await listInstallationRepos(octokit as never);
+  const repos = await listInstallationRepos(octokit);
   return NextResponse.json({ repos });
 }
