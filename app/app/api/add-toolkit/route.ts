@@ -13,7 +13,13 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  const octokit = await getInstallationOctokit(Number(installationId));
-  const result = await addToolkitToRepo(octokit, owner, repo);
-  return NextResponse.json(result);
+  try {
+    const octokit = await getInstallationOctokit(Number(installationId));
+    const result = await addToolkitToRepo(octokit, owner, repo);
+    return NextResponse.json(result);
+  } catch (err) {
+    console.error("add-toolkit failed", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

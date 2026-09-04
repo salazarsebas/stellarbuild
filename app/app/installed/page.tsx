@@ -14,6 +14,7 @@ function InstalledPageContent() {
   const installationId = searchParams.get("installation_id");
   const [repos, setRepos] = useState<RepoRef[]>([]);
   const [prUrls, setPrUrls] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,14 +27,24 @@ function InstalledPageContent() {
   async function handleAdd(repo: RepoRef) {
     const key = `${repo.owner}/${repo.name}`;
     setLoadingKey(key);
-    const res = await fetch("/api/add-toolkit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ installation_id: installationId, owner: repo.owner, repo: repo.name }),
-    });
-    const data = await res.json();
-    setPrUrls((prev) => ({ ...prev, [key]: data.prUrl }));
-    setLoadingKey(null);
+    setErrors((prev) => ({ ...prev, [key]: "" }));
+    try {
+      const res = await fetch("/api/add-toolkit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ installation_id: installationId, owner: repo.owner, repo: repo.name }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error ?? "Something went wrong");
+      }
+      setPrUrls((prev) => ({ ...prev, [key]: data.prUrl }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      setErrors((prev) => ({ ...prev, [key]: message }));
+    } finally {
+      setLoadingKey(null);
+    }
   }
 
   if (!installationId) {
@@ -70,25 +81,34 @@ function InstalledPageContent() {
               return (
                 <li key={key} className={styles.row}>
                   <span className={styles.repoName}>{key}</span>
-                  {prUrls[key] ? (
-                    <a
-                      href={prUrls[key]}
-                      className={styles.prLink}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      View PR &#8594;
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className={styles.button}
-                      disabled={loadingKey === key}
-                      onClick={() => handleAdd(repo)}
-                    >
-                      {loadingKey === key ? "Adding..." : "Add stellar-build tools"}
-                    </button>
-                  )}
+                  <div className={styles.rowAction}>
+                    {errors[key] ? (
+                      <span className={styles.errorText}>{errors[key]}</span>
+                    ) : null}
+                    {prUrls[key] ? (
+                      <a
+                        href={prUrls[key]}
+                        className={styles.prLink}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View PR &#8594;
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.button}
+                        disabled={loadingKey === key}
+                        onClick={() => handleAdd(repo)}
+                      >
+                        {loadingKey === key
+                          ? "Adding..."
+                          : errors[key]
+                            ? "Retry"
+                            : "Add stellar-build tools"}
+                      </button>
+                    )}
+                  </div>
                 </li>
               );
             })}
