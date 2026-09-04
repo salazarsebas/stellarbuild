@@ -1,0 +1,124 @@
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+}
+
+.badge {
+  font-family: var(--font-geist-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 34rem;
+}
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  text-align: left;
+  list-style: none;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.row:hover {
+  border-color: var(--foreground);
+  transform: translateY(-2px);
+}
+
+.repoName {
+  font-family: var(--font-geist-mono);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.button {
+  flex-shrink: 0;
+  font-family: var(--font-geist-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--background);
+  background: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.prLink {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--foreground);
+  border-bottom: 1px solid var(--foreground);
+}
+
+.prLink:hover {
+  color: var(--muted);
+  border-bottom-color: var(--muted);
+}
+
+.notice {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
