@@ -1,4 +1,5 @@
 import { getToolkitFiles, type ToolkitFile } from "./toolkit-files";
+import { TARGETS, type TargetKey } from "./targets";
 
 export interface AddToolkitResult {
   prUrl: string;
@@ -6,6 +7,7 @@ export interface AddToolkitResult {
 }
 
 const BRANCH_NAME = "stellar-build/add-toolkit";
+const BLOB_CONCURRENCY = 8;
 
 interface AddToolkitOctokit {
   rest: {
@@ -59,12 +61,34 @@ interface AddToolkitOctokit {
   };
 }
 
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let index = 0;
+  async function worker() {
+    while (index < items.length) {
+      const current = index++;
+      results[current] = await fn(items[current]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 export async function addToolkitToRepo(
   octokit: AddToolkitOctokit,
   owner: string,
   repo: string,
+  targets: TargetKey[],
   files: ToolkitFile[] = getToolkitFiles()
 ): Promise<AddToolkitResult> {
+  if (targets.length === 0) {
+    throw new Error("At least one target must be selected");
+  }
+
   const { data: repoData } = await octokit.rest.repos.get({ owner, repo });
   const baseBranch = repoData.default_branch;
 
@@ -75,23 +99,29 @@ export async function addToolkitToRepo(
   });
   const baseSha = refData.object.sha;
 
-  // Created sequentially, not via Promise.all: GitHub's secondary rate limit
-  // rejects large bursts of concurrent requests, and this toolkit is ~170 files.
-  const treeItems: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
-  for (const file of files) {
+  const selectedTargets = TARGETS.filter((t) => targets.includes(t.key));
+
+  const entries: Array<{ path: string; content: string }> = [];
+  for (const target of selectedTargets) {
+    for (const file of files) {
+      entries.push({ path: file.path.replace(/^\.claude/, target.folder), content: file.content });
+    }
+  }
+
+  const treeItems = await mapWithConcurrency(entries, BLOB_CONCURRENCY, async (entry) => {
     const { data: blob } = await octokit.rest.git.createBlob({
       owner,
       repo,
-      content: file.content,
+      content: entry.content,
       encoding: "utf-8",
     });
-    treeItems.push({
-      path: file.path,
-      mode: "100644",
-      type: "blob",
+    return {
+      path: entry.path,
+      mode: "100644" as const,
+      type: "blob" as const,
       sha: blob.sha,
-    });
-  }
+    };
+  });
 
   const { data: tree } = await octokit.rest.git.createTree({
     owner,
@@ -125,6 +155,7 @@ export async function addToolkitToRepo(
     });
   }
 
+  const targetLabels = selectedTargets.map((t) => t.label).join(", ");
   const { data: pr } = await octokit.rest.pulls.create({
     owner,
     repo,
@@ -132,7 +163,7 @@ export async function addToolkitToRepo(
     head: BRANCH_NAME,
     base: baseBranch,
     body:
-      "Adds the stellar-build Claude Code skills toolkit under `.claude/skills/`.\n\n" +
+      `Adds the stellar-build toolkit for: ${targetLabels}.\n\n` +
       "Opened automatically after installing the stellar-build GitHub App.",
   });
 

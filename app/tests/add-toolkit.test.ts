@@ -9,7 +9,9 @@ function makeOctokit() {
       },
       git: {
         getRef: vi.fn().mockResolvedValue({ data: { object: { sha: "base-sha" } } }),
-        createBlob: vi.fn().mockResolvedValue({ data: { sha: "blob-sha" } }),
+        createBlob: vi.fn().mockImplementation(async ({ content }: { content: string }) => ({
+          data: { sha: `blob-${content}` },
+        })),
         createTree: vi.fn().mockResolvedValue({ data: { sha: "tree-sha" } }),
         createCommit: vi.fn().mockResolvedValue({ data: { sha: "commit-sha" } }),
         createRef: vi.fn().mockResolvedValue({}),
@@ -25,36 +27,41 @@ function makeOctokit() {
 }
 
 describe("addToolkitToRepo", () => {
-  it("creates a branch, commits the toolkit files, and opens a PR", async () => {
+  it("remaps every file under each selected target's folder", async () => {
     const octokit = makeOctokit();
     const files = [{ path: ".claude/skills/example-skill/SKILL.md", content: "hello" }];
 
-    const result = await addToolkitToRepo(octokit as never, "salazarsebas", "x", files);
+    const result = await addToolkitToRepo(octokit as never, "salazarsebas", "x", ["claude", "codex"], files);
 
-    expect(octokit.rest.git.createBlob).toHaveBeenCalledWith(
-      expect.objectContaining({ content: "hello", encoding: "utf-8" })
-    );
-    expect(octokit.rest.git.createTree).toHaveBeenCalledWith(
-      expect.objectContaining({
-        base_tree: "base-sha",
-        tree: [
-          expect.objectContaining({
-            path: ".claude/skills/example-skill/SKILL.md",
-            sha: "blob-sha",
-          }),
-        ],
-      })
-    );
-    expect(octokit.rest.git.createRef).toHaveBeenCalledWith(
-      expect.objectContaining({ ref: "refs/heads/stellar-build/add-toolkit", sha: "commit-sha" })
-    );
-    expect(octokit.rest.pulls.create).toHaveBeenCalledWith(
-      expect.objectContaining({ head: "stellar-build/add-toolkit", base: "main" })
-    );
+    const treeCall = octokit.rest.git.createTree.mock.calls[0][0];
+    const paths = treeCall.tree.map((item: { path: string }) => item.path).sort();
+    expect(paths).toEqual([
+      ".claude/skills/example-skill/SKILL.md",
+      ".codex/skills/example-skill/SKILL.md",
+    ]);
+    expect(octokit.rest.git.createBlob).toHaveBeenCalledTimes(2);
     expect(result).toEqual({
       prUrl: "https://github.com/salazarsebas/x/pull/1",
       branch: "stellar-build/add-toolkit",
     });
+  });
+
+  it("mentions the selected target labels in the PR body", async () => {
+    const octokit = makeOctokit();
+    const files = [{ path: ".claude/skills/example-skill/SKILL.md", content: "hello" }];
+
+    await addToolkitToRepo(octokit as never, "salazarsebas", "x", ["gemini", "other"], files);
+
+    const prCall = octokit.rest.pulls.create.mock.calls[0][0];
+    expect(prCall.body).toContain("Gemini CLI");
+    expect(prCall.body).toContain("Others");
+  });
+
+  it("throws when no targets are given", async () => {
+    const octokit = makeOctokit();
+    await expect(addToolkitToRepo(octokit as never, "salazarsebas", "x", [], [])).rejects.toThrow(
+      "At least one target must be selected"
+    );
   });
 
   it("falls back to updateRef when the branch already exists", async () => {
@@ -62,7 +69,7 @@ describe("addToolkitToRepo", () => {
     octokit.rest.git.createRef.mockRejectedValue(new Error("Reference already exists"));
     const files = [{ path: ".claude/skills/example-skill/SKILL.md", content: "hello" }];
 
-    await addToolkitToRepo(octokit as never, "salazarsebas", "x", files);
+    await addToolkitToRepo(octokit as never, "salazarsebas", "x", ["claude"], files);
 
     expect(octokit.rest.git.updateRef).toHaveBeenCalledWith(
       expect.objectContaining({ ref: "heads/stellar-build/add-toolkit", force: true })
