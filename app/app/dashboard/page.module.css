@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .badge {
@@ -41,19 +41,70 @@
   max-width: 34rem;
 }
 
-.list {
+.notice {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.button {
+  flex-shrink: 0;
+  font-family: var(--font-geist-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--background);
+  background: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.group {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
   text-align: left;
-  list-style: none;
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-geist-mono);
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+}
+
+.groupType {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
 }
 
 .empty {
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  list-style: none;
 }
 
 .row {
@@ -81,27 +132,18 @@
   overflow-wrap: anywhere;
 }
 
-.button {
+.rowAction {
   flex-shrink: 0;
-  font-family: var(--font-geist-sans);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--background);
-  background: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.button:hover:not(:disabled) {
-  opacity: 0.85;
-}
-
-.button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.errorText {
+  color: #e5484d;
+  font-size: 0.8rem;
+  max-width: 16rem;
+  text-align: right;
 }
 
 .prLink {
@@ -117,22 +159,17 @@
   border-bottom-color: var(--muted);
 }
 
-.notice {
+.footerLink {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.rowAction {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.errorText {
-  color: #e5484d;
-  font-size: 0.8rem;
-  max-width: 16rem;
-  text-align: right;
+.footerLink:hover {
+  color: var(--foreground);
+  border-bottom-color: var(--foreground);
 }
