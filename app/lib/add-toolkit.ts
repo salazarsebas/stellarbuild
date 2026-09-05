@@ -7,7 +7,6 @@ export interface AddToolkitResult {
 }
 
 const BRANCH_NAME = "stellar-build/add-toolkit";
-const BLOB_CONCURRENCY = 8;
 
 interface AddToolkitOctokit {
   rest: {
@@ -20,17 +19,11 @@ interface AddToolkitOctokit {
         repo: string;
         ref: string;
       }) => Promise<{ data: { object: { sha: string } } }>;
-      createBlob: (params: {
-        owner: string;
-        repo: string;
-        content: string;
-        encoding: string;
-      }) => Promise<{ data: { sha: string } }>;
       createTree: (params: {
         owner: string;
         repo: string;
         base_tree: string;
-        tree: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }>;
+        tree: Array<{ path: string; mode: "100644"; type: "blob"; content: string }>;
       }) => Promise<{ data: { sha: string } }>;
       createCommit: (params: {
         owner: string;
@@ -59,23 +52,6 @@ interface AddToolkitOctokit {
       }) => Promise<{ data: { html_url: string } }>;
     };
   };
-}
-
-async function mapWithConcurrency<T, R>(
-  items: T[],
-  limit: number,
-  fn: (item: T) => Promise<R>
-): Promise<R[]> {
-  const results: R[] = new Array(items.length);
-  let index = 0;
-  async function worker() {
-    while (index < items.length) {
-      const current = index++;
-      results[current] = await fn(items[current]);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
 }
 
 export async function addToolkitToRepo(
@@ -108,20 +84,12 @@ export async function addToolkitToRepo(
     }
   }
 
-  const treeItems = await mapWithConcurrency(entries, BLOB_CONCURRENCY, async (entry) => {
-    const { data: blob } = await octokit.rest.git.createBlob({
-      owner,
-      repo,
-      content: entry.content,
-      encoding: "utf-8",
-    });
-    return {
-      path: entry.path,
-      mode: "100644" as const,
-      type: "blob" as const,
-      sha: blob.sha,
-    };
-  });
+  const treeItems = entries.map((entry) => ({
+    path: entry.path,
+    mode: "100644" as const,
+    type: "blob" as const,
+    content: entry.content,
+  }));
 
   const { data: tree } = await octokit.rest.git.createTree({
     owner,

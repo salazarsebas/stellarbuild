@@ -9,9 +9,6 @@ function makeOctokit() {
       },
       git: {
         getRef: vi.fn().mockResolvedValue({ data: { object: { sha: "base-sha" } } }),
-        createBlob: vi.fn().mockImplementation(async ({ content }: { content: string }) => ({
-          data: { sha: `blob-${content}` },
-        })),
         createTree: vi.fn().mockResolvedValue({ data: { sha: "tree-sha" } }),
         createCommit: vi.fn().mockResolvedValue({ data: { sha: "commit-sha" } }),
         createRef: vi.fn().mockResolvedValue({}),
@@ -39,7 +36,7 @@ describe("addToolkitToRepo", () => {
       ".claude/skills/example-skill/SKILL.md",
       ".codex/skills/example-skill/SKILL.md",
     ]);
-    expect(octokit.rest.git.createBlob).toHaveBeenCalledTimes(2);
+    expect(treeCall.tree.every((item: { content: string }) => item.content === "hello")).toBe(true);
     expect(result).toEqual({
       prUrl: "https://github.com/salazarsebas/x/pull/1",
       branch: "stellar-build/add-toolkit",
