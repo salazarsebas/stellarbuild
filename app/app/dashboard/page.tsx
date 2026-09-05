@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import { TARGETS, type TargetKey } from "@/lib/targets";
 
 interface Installation {
   id: number;
@@ -16,6 +17,7 @@ interface RepoRef {
 }
 
 const APP_SLUG = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG ?? "";
+const DEFAULT_TARGETS = new Set<TargetKey>(["claude"]);
 
 export default function DashboardPage() {
   const [status, setStatus] = useState<"loading" | "signed-out" | "ready">("loading");
@@ -24,6 +26,7 @@ export default function DashboardPage() {
   const [prUrls, setPrUrls] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [selectedTargets, setSelectedTargets] = useState<Record<string, Set<TargetKey>>>({});
 
   useEffect(() => {
     fetch("/api/installations")
@@ -49,15 +52,33 @@ export default function DashboardPage() {
       });
   }, []);
 
+  function toggleTarget(key: string, target: TargetKey) {
+    setSelectedTargets((prev) => {
+      const current = new Set(prev[key] ?? DEFAULT_TARGETS);
+      if (current.has(target)) {
+        current.delete(target);
+      } else {
+        current.add(target);
+      }
+      return { ...prev, [key]: current };
+    });
+  }
+
   async function handleAdd(installationId: number, repo: RepoRef) {
     const key = `${repo.owner}/${repo.name}`;
+    const targets = Array.from(selectedTargets[key] ?? DEFAULT_TARGETS);
     setLoadingKey(key);
     setErrors((prev) => ({ ...prev, [key]: "" }));
     try {
       const res = await fetch("/api/add-toolkit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ installation_id: installationId, owner: repo.owner, repo: repo.name }),
+        body: JSON.stringify({
+          installation_id: installationId,
+          owner: repo.owner,
+          repo: repo.name,
+          targets,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -132,30 +153,47 @@ export default function DashboardPage() {
                   <ul className={styles.list}>
                     {repos.map((repo) => {
                       const key = `${repo.owner}/${repo.name}`;
+                      const selected = selectedTargets[key] ?? DEFAULT_TARGETS;
                       return (
                         <li key={key} className={styles.row}>
-                          <span className={styles.repoName}>{key}</span>
-                          <div className={styles.rowAction}>
-                            {errors[key] ? <span className={styles.errorText}>{errors[key]}</span> : null}
-                            {prUrls[key] ? (
-                              <a href={prUrls[key]} className={styles.prLink} target="_blank" rel="noreferrer">
-                                View PR &#8594;
-                              </a>
-                            ) : (
-                              <button
-                                type="button"
-                                className={styles.button}
-                                disabled={loadingKey === key}
-                                onClick={() => handleAdd(inst.id, repo)}
-                              >
-                                {loadingKey === key
-                                  ? "Adding..."
-                                  : errors[key]
-                                    ? "Retry"
-                                    : "Add stellar-build tools"}
-                              </button>
-                            )}
+                          <div className={styles.rowHeader}>
+                            <span className={styles.repoName}>{key}</span>
+                            <div className={styles.rowAction}>
+                              {errors[key] ? <span className={styles.errorText}>{errors[key]}</span> : null}
+                              {prUrls[key] ? (
+                                <a href={prUrls[key]} className={styles.prLink} target="_blank" rel="noreferrer">
+                                  View PR &#8594;
+                                </a>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className={styles.button}
+                                  disabled={loadingKey === key || selected.size === 0}
+                                  onClick={() => handleAdd(inst.id, repo)}
+                                >
+                                  {loadingKey === key
+                                    ? "Adding..."
+                                    : errors[key]
+                                      ? "Retry"
+                                      : "Add stellar-build tools"}
+                                </button>
+                              )}
+                            </div>
                           </div>
+                          {!prUrls[key] ? (
+                            <div className={styles.targets}>
+                              {TARGETS.map((t) => (
+                                <label key={t.key} className={styles.targetLabel}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selected.has(t.key)}
+                                    onChange={() => toggleTarget(key, t.key)}
+                                  />
+                                  {t.label}
+                                </label>
+                              ))}
+                            </div>
+                          ) : null}
                         </li>
                       );
                     })}
