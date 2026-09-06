@@ -1,0 +1,35 @@
+.switcher {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem;
+  background: var(--surface);
+  z-index: 10;
+}
+
+.link,
+.active {
+  font-family: var(--font-geist-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 999px;
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--foreground);
+}
+
+.active {
+  background: var(--background);
+  color: var(--foreground);
+  cursor: default;
+}

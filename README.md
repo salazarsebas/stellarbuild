@@ -12,7 +12,7 @@ Two ways to get the toolkit:
 This repo has two parts:
 
 - `toolkit/`: the curated set of skills (Stellar/Soroban development, smart contracts, wallets, assets, and the process/agent skills that go with them) that gets distributed. It's the single source of truth: `scripts/sync-template-repo.sh` mirrors it onto the template repo, and the GitHub App reads it directly when building a Pull Request.
-- `app/`: a Next.js app, a landing page with the two entry points above, and the API routes backing the GitHub App (creates a branch, commits the toolkit files, and opens the PR via the GitHub REST API).
+- `app/`: a Next.js app, a landing page with the two entry points above, and the API routes backing the GitHub App (creates a branch, commits the toolkit files, and opens the PR via the GitHub REST API). The UI is available in English, Spanish, and Portuguese (`app/messages/`), with English served unprefixed (`/`, `/dashboard`) and the other two under `/es` and `/pt`.
 
 ## Development
 

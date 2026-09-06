@@ -1,0 +1,50 @@
+{
+  "Metadata": {
+    "title": "stellar-build",
+    "description": "Add the stellar-build Claude Code skills toolkit to a new or existing Stellar project in a couple of clicks. No CLI, no plugin install.",
+    "ogDescription": "Add the stellar-build Claude Code skills toolkit to a new or existing Stellar project in a couple of clicks."
+  },
+  "LandingPage": {
+    "badge": "Claude Code skills for Stellar",
+    "title": "stellar-build",
+    "subtitle": "Add a curated set of Stellar and Soroban development skills to a project in a couple of clicks. No CLI, no plugin install.",
+    "newProjectLabel": "New project",
+    "newProjectTitle": "Start from a template",
+    "newProjectText": "Generate a repo pre-loaded with the toolkit using GitHub's native template flow.",
+    "newProjectAction": "Use this template →",
+    "existingProjectLabel": "Existing project",
+    "existingProjectTitle": "Add to your repo",
+    "existingProjectText": "Sign in with GitHub to see every account and repo where the toolkit can be added.",
+    "existingProjectAction": "Sign in with GitHub →",
+    "footerLink": "View the toolkit source on GitHub"
+  },
+  "Dashboard": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "errorSubtitle": "We could not load your installations. Please try again.",
+    "errorRetry": "Try again",
+    "signedOutBadge": "stellar-build",
+    "signedOutTitle": "Sign in to continue",
+    "signedOutSubtitle": "Sign in with GitHub to see the accounts and repos where the toolkit can be added.",
+    "authErrorInvalidState": "Your sign-in session expired or was tampered with. Please try again.",
+    "authErrorMissingConfig": "GitHub sign-in is not configured correctly. Please contact the site owner.",
+    "authErrorTokenExchangeFailed": "GitHub could not verify your sign-in. Please try again.",
+    "authErrorDefault": "Sign-in failed. Please try again.",
+    "signInButton": "Sign in with GitHub",
+    "signedInBadge": "Signed in",
+    "title": "Add the stellar-build toolkit",
+    "subtitle": "Pick a repo below and open a pull request that adds the toolkit to it.",
+    "noInstallations": "No installations yet.",
+    "installLink": "Install the app on an account",
+    "loadingRepos": "Loading repositories…",
+    "reposError": "Could not load repositories for this account.",
+    "viewPr": "View PR →",
+    "addButton": "Add stellar-build tools",
+    "addingButton": "Adding...",
+    "retryButton": "Retry",
+    "installOnAnother": "Install on another account"
+  },
+  "LanguageSwitcher": {
+    "label": "Language"
+  }
+}
