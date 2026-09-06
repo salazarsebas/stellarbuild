@@ -1,0 +1,50 @@
+{
+  "Metadata": {
+    "title": "stellar-build",
+    "description": "Adicione o toolkit de skills do Claude Code do stellar-build a um projeto Stellar novo ou existente em poucos cliques. Sem CLI, sem instalar plugins.",
+    "ogDescription": "Adicione o toolkit de skills do Claude Code do stellar-build a um projeto Stellar novo ou existente em poucos cliques."
+  },
+  "LandingPage": {
+    "badge": "Skills do Claude Code para Stellar",
+    "title": "stellar-build",
+    "subtitle": "Adicione um conjunto selecionado de skills de desenvolvimento em Stellar e Soroban a um projeto em poucos cliques. Sem CLI, sem instalar plugins.",
+    "newProjectLabel": "Novo projeto",
+    "newProjectTitle": "Começar a partir de um template",
+    "newProjectText": "Gere um repositório com o toolkit pré-carregado usando o fluxo nativo de templates do GitHub.",
+    "newProjectAction": "Usar este template →",
+    "existingProjectLabel": "Projeto existente",
+    "existingProjectTitle": "Adicionar ao seu repositório",
+    "existingProjectText": "Entre com o GitHub para ver todas as contas e repositórios onde o toolkit pode ser adicionado.",
+    "existingProjectAction": "Entrar com o GitHub →",
+    "footerLink": "Ver o código-fonte do toolkit no GitHub"
+  },
+  "Dashboard": {
+    "loading": "Carregando…",
+    "errorTitle": "Algo deu errado",
+    "errorSubtitle": "Não conseguimos carregar suas instalações. Tente novamente.",
+    "errorRetry": "Tentar novamente",
+    "signedOutBadge": "stellar-build",
+    "signedOutTitle": "Entre para continuar",
+    "signedOutSubtitle": "Entre com o GitHub para ver as contas e repositórios onde o toolkit pode ser adicionado.",
+    "authErrorInvalidState": "Sua sessão de login expirou ou foi alterada. Tente novamente.",
+    "authErrorMissingConfig": "O login com GitHub não está configurado corretamente. Entre em contato com o responsável pelo site.",
+    "authErrorTokenExchangeFailed": "O GitHub não conseguiu verificar seu login. Tente novamente.",
+    "authErrorDefault": "Falha no login. Tente novamente.",
+    "signInButton": "Entrar com o GitHub",
+    "signedInBadge": "Sessão iniciada",
+    "title": "Adicione o toolkit do stellar-build",
+    "subtitle": "Escolha um repositório abaixo e abra um pull request que adicione o toolkit a ele.",
+    "noInstallations": "Ainda não há instalações.",
+    "installLink": "Instale o app em uma conta",
+    "loadingRepos": "Carregando repositórios…",
+    "reposError": "Não foi possível carregar os repositórios desta conta.",
+    "viewPr": "Ver PR →",
+    "addButton": "Adicionar ferramentas do stellar-build",
+    "addingButton": "Adicionando...",
+    "retryButton": "Tentar novamente",
+    "installOnAnother": "Instalar em outra conta"
+  },
+  "LanguageSwitcher": {
+    "label": "Idioma"
+  }
+}

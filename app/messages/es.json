@@ -1,0 +1,50 @@
+{
+  "Metadata": {
+    "title": "stellar-build",
+    "description": "Agrega el toolkit de skills de Claude Code de stellar-build a un proyecto de Stellar nuevo o existente en un par de clics. Sin CLI, sin instalar plugins.",
+    "ogDescription": "Agrega el toolkit de skills de Claude Code de stellar-build a un proyecto de Stellar nuevo o existente en un par de clics."
+  },
+  "LandingPage": {
+    "badge": "Skills de Claude Code para Stellar",
+    "title": "stellar-build",
+    "subtitle": "Agrega un conjunto curado de skills de desarrollo en Stellar y Soroban a un proyecto en un par de clics. Sin CLI, sin instalar plugins.",
+    "newProjectLabel": "Proyecto nuevo",
+    "newProjectTitle": "Empezar desde una plantilla",
+    "newProjectText": "Genera un repositorio con el toolkit precargado usando el flujo nativo de plantillas de GitHub.",
+    "newProjectAction": "Usar esta plantilla →",
+    "existingProjectLabel": "Proyecto existente",
+    "existingProjectTitle": "Agregar a tu repositorio",
+    "existingProjectText": "Inicia sesión con GitHub para ver cada cuenta y repositorio donde se puede agregar el toolkit.",
+    "existingProjectAction": "Iniciar sesión con GitHub →",
+    "footerLink": "Ver el código del toolkit en GitHub"
+  },
+  "Dashboard": {
+    "loading": "Cargando…",
+    "errorTitle": "Algo salió mal",
+    "errorSubtitle": "No pudimos cargar tus instalaciones. Intenta de nuevo.",
+    "errorRetry": "Intentar de nuevo",
+    "signedOutBadge": "stellar-build",
+    "signedOutTitle": "Inicia sesión para continuar",
+    "signedOutSubtitle": "Inicia sesión con GitHub para ver las cuentas y repositorios donde se puede agregar el toolkit.",
+    "authErrorInvalidState": "Tu sesión de inicio expiró o fue alterada. Intenta de nuevo.",
+    "authErrorMissingConfig": "El inicio de sesión con GitHub no está configurado correctamente. Contacta al responsable del sitio.",
+    "authErrorTokenExchangeFailed": "GitHub no pudo verificar tu inicio de sesión. Intenta de nuevo.",
+    "authErrorDefault": "El inicio de sesión falló. Intenta de nuevo.",
+    "signInButton": "Iniciar sesión con GitHub",
+    "signedInBadge": "Sesión iniciada",
+    "title": "Agrega el toolkit de stellar-build",
+    "subtitle": "Elige un repositorio abajo y abre un pull request que le agregue el toolkit.",
+    "noInstallations": "Todavía no hay instalaciones.",
+    "installLink": "Instala la app en una cuenta",
+    "loadingRepos": "Cargando repositorios…",
+    "reposError": "No se pudieron cargar los repositorios de esta cuenta.",
+    "viewPr": "Ver PR →",
+    "addButton": "Agregar herramientas de stellar-build",
+    "addingButton": "Agregando...",
+    "retryButton": "Reintentar",
+    "installOnAnother": "Instalar en otra cuenta"
+  },
+  "LanguageSwitcher": {
+    "label": "Idioma"
+  }
+}

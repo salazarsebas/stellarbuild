@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import styles from "./page.module.css";
 import { TARGETS, type TargetKey } from "@/lib/targets";
 
@@ -21,13 +22,8 @@ type ReposState = RepoRef[] | "error";
 const APP_SLUG = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG ?? "";
 const DEFAULT_TARGETS = new Set<TargetKey>(["claude"]);
 
-const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  invalid_state: "Your sign-in session expired or was tampered with. Please try again.",
-  missing_config: "GitHub sign-in is not configured correctly. Please contact the site owner.",
-  token_exchange_failed: "GitHub could not verify your sign-in. Please try again.",
-};
-
 export default function DashboardPage() {
+  const t = useTranslations("Dashboard");
   const [status, setStatus] = useState<"loading" | "signed-out" | "ready" | "error">("loading");
   const [installations, setInstallations] = useState<Installation[]>([]);
   const [reposByInstallation, setReposByInstallation] = useState<Record<number, ReposState>>({});
@@ -124,7 +120,7 @@ export default function DashboardPage() {
     return (
       <main className={styles.main}>
         <div className={styles.container}>
-          <p className={styles.notice}>Loading&#8230;</p>
+          <p className={styles.notice}>{t("loading")}</p>
         </div>
       </main>
     );
@@ -135,12 +131,11 @@ export default function DashboardPage() {
       <main className={styles.main}>
         <div className={styles.container}>
           <span className={styles.badge}>stellar-build</span>
-          <h1 className={styles.title}>Something went wrong</h1>
-          <p className={styles.subtitle}>
-            We could not load your installations. Please try again.
-          </p>
+          <h1 className={styles.title}>{t("errorTitle")}</h1>
+          <p className={styles.subtitle}>{t("errorSubtitle")}</p>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- forces a full reload so the fetch effect reruns from a clean mount */}
           <a className={styles.button} href="/dashboard">
-            Try again
+            {t("errorRetry")}
           </a>
         </div>
       </main>
@@ -151,19 +146,23 @@ export default function DashboardPage() {
     return (
       <main className={styles.main}>
         <div className={styles.container}>
-          <span className={styles.badge}>stellar-build</span>
-          <h1 className={styles.title}>Sign in to continue</h1>
-          <p className={styles.subtitle}>
-            Sign in with GitHub to see the accounts and repos where the
-            toolkit can be added.
-          </p>
+          <span className={styles.badge}>{t("signedOutBadge")}</span>
+          <h1 className={styles.title}>{t("signedOutTitle")}</h1>
+          <p className={styles.subtitle}>{t("signedOutSubtitle")}</p>
           {authError ? (
             <p className={styles.errorText}>
-              {AUTH_ERROR_MESSAGES[authError] ?? "Sign-in failed. Please try again."}
+              {authError === "invalid_state"
+                ? t("authErrorInvalidState")
+                : authError === "missing_config"
+                  ? t("authErrorMissingConfig")
+                  : authError === "token_exchange_failed"
+                    ? t("authErrorTokenExchangeFailed")
+                    : t("authErrorDefault")}
             </p>
           ) : null}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- this is an API route, not a page, and must not be prefetched */}
           <a className={styles.button} href="/api/auth/login">
-            Sign in with GitHub
+            {t("signInButton")}
           </a>
         </div>
       </main>
@@ -173,17 +172,14 @@ export default function DashboardPage() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        <span className={styles.badge}>Signed in</span>
-        <h1 className={styles.title}>Add the stellar-build toolkit</h1>
-        <p className={styles.subtitle}>
-          Pick a repo below and open a pull request that adds the toolkit to
-          it.
-        </p>
+        <span className={styles.badge}>{t("signedInBadge")}</span>
+        <h1 className={styles.title}>{t("title")}</h1>
+        <p className={styles.subtitle}>{t("subtitle")}</p>
 
         {installations.length === 0 ? (
           <p className={styles.empty}>
-            No installations yet.{" "}
-            {installUrl ? <a href={installUrl}>Install the app on an account</a> : null}
+            {t("noInstallations")}{" "}
+            {installUrl ? <a href={installUrl}>{t("installLink")}</a> : null}
           </p>
         ) : (
           installations.map((inst) => {
@@ -195,9 +191,9 @@ export default function DashboardPage() {
                   <span className={styles.groupType}>{inst.type}</span>
                 </h2>
                 {!repos ? (
-                  <p className={styles.empty}>Loading repositories&#8230;</p>
+                  <p className={styles.empty}>{t("loadingRepos")}</p>
                 ) : repos === "error" ? (
-                  <p className={styles.errorText}>Could not load repositories for this account.</p>
+                  <p className={styles.errorText}>{t("reposError")}</p>
                 ) : (
                   <ul className={styles.list}>
                     {repos.map((repo) => {
@@ -211,7 +207,7 @@ export default function DashboardPage() {
                               {errors[key] ? <span className={styles.errorText}>{errors[key]}</span> : null}
                               {prUrls[key] ? (
                                 <a href={prUrls[key]} className={styles.prLink} target="_blank" rel="noreferrer">
-                                  View PR &#8594;
+                                  {t("viewPr")}
                                 </a>
                               ) : (
                                 <button
@@ -221,24 +217,24 @@ export default function DashboardPage() {
                                   onClick={() => handleAdd(inst.id, repo)}
                                 >
                                   {loadingKey === key
-                                    ? "Adding..."
+                                    ? t("addingButton")
                                     : errors[key]
-                                      ? "Retry"
-                                      : "Add stellar-build tools"}
+                                      ? t("retryButton")
+                                      : t("addButton")}
                                 </button>
                               )}
                             </div>
                           </div>
                           {!prUrls[key] ? (
                             <div className={styles.targets}>
-                              {TARGETS.map((t) => (
-                                <label key={t.key} className={styles.targetLabel}>
+                              {TARGETS.map((tk) => (
+                                <label key={tk.key} className={styles.targetLabel}>
                                   <input
                                     type="checkbox"
-                                    checked={selected.has(t.key)}
-                                    onChange={() => toggleTarget(key, t.key)}
+                                    checked={selected.has(tk.key)}
+                                    onChange={() => toggleTarget(key, tk.key)}
                                   />
-                                  {t.label}
+                                  {tk.label}
                                 </label>
                               ))}
                             </div>
@@ -255,7 +251,7 @@ export default function DashboardPage() {
 
         {installUrl ? (
           <a className={styles.footerLink} href={installUrl}>
-            Install on another account
+            {t("installOnAnother")}
           </a>
         ) : null}
       </div>

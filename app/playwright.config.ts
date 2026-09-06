@@ -21,6 +21,10 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: E2E_BASE_URL,
+    // Pins the browser's Accept-Language and navigator.language to English so
+    // next-intl's locale auto-detection resolves to the default locale
+    // deterministically, regardless of the host machine's own locale.
+    locale: "en-US",
   },
   webServer: {
     command: "bun run build && bun run start -- --port 3100",
