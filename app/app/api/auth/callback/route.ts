@@ -8,16 +8,13 @@ export async function GET(req: NextRequest) {
   const session = await getSession();
 
   if (!code || !state || state !== session.oauthState) {
-    return NextResponse.json({ error: "Invalid OAuth state" }, { status: 400 });
+    return NextResponse.redirect(new URL("/dashboard?authError=invalid_state", req.nextUrl.origin));
   }
 
   const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
   const clientSecret = process.env.GITHUB_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return NextResponse.json(
-      { error: "GITHUB_OAUTH_CLIENT_ID and GITHUB_OAUTH_CLIENT_SECRET must be set" },
-      { status: 500 }
-    );
+    return NextResponse.redirect(new URL("/dashboard?authError=missing_config", req.nextUrl.origin));
   }
 
   try {
@@ -33,9 +30,8 @@ export async function GET(req: NextRequest) {
     }
     delete session.oauthState;
     await session.save();
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "OAuth exchange failed";
-    return NextResponse.json({ error: message }, { status: 400 });
+  } catch {
+    return NextResponse.redirect(new URL("/dashboard?authError=token_exchange_failed", req.nextUrl.origin));
   }
 
   return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
