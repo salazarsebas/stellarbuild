@@ -93,11 +93,25 @@ function isDuplicatePullRequestError(err: unknown): boolean {
 
 function buildPrBody(targetLabels: string): string {
   return [
-    `This pull request adds the stellar-build Claude Code skills toolkit, configured for ${targetLabels}.`,
+    "## Summary",
     "",
-    "The toolkit provides a curated set of Stellar and Soroban development skills, ready to use as soon as this pull request is merged.",
+    `This pull request adds the [stellar-build](https://github.com/salazarsebas/stellar-build-toolkit) Claude Code skills toolkit to this repository, configured for ${targetLabels}.`,
     "",
-    "Opened automatically by the stellar-build GitHub App.",
+    "stellar-build is a curated collection of skills for Stellar and Soroban development, covering smart contract patterns, wallet integrations, asset issuance, data access, and the supporting process and agent skills that go with them.",
+    "",
+    "## What's included",
+    "",
+    "- Skill files added under the folder your selected tooling reads from",
+    "- No existing files in this repository are modified or removed",
+    "- Ready to use as soon as this pull request is merged, no additional setup required",
+    "",
+    "## Why a pull request",
+    "",
+    "Nothing is pushed directly to this repository's default branch. This gives you the chance to review the added files before they land, the same as any other change to this repository.",
+    "",
+    "---",
+    "",
+    "Opened automatically by the stellar-build GitHub App, on request of an authenticated member of this installation.",
   ].join("\n");
 }
 
