@@ -23,7 +23,7 @@ export default defineConfig({
     baseURL: E2E_BASE_URL,
   },
   webServer: {
-    command: "npm run build && npm run start -- --port 3100",
+    command: "bun run build && bun run start -- --port 3100",
     url: E2E_BASE_URL,
     reuseExistingServer: false,
     timeout: 180_000,

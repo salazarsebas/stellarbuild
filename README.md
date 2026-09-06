@@ -18,9 +18,10 @@ This repo has two parts:
 
 ```bash
 cd app
-npm install
-npm run dev    # http://localhost:3000
-npm test       # Vitest
+bun install
+bun run dev        # http://localhost:3000
+bun run test       # Vitest
+bun run test:e2e   # Playwright, against a production build
 ```
 
 ## Deployment
