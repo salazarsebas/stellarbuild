@@ -1,16 +1,31 @@
 import { test, expect } from "@playwright/test";
 import { signInAs } from "./fixtures";
-import { FAKE_USER_INSTALLATION_ID, FAKE_ORG_LOGIN, FAKE_REPO_NAME } from "../mocks/github-handlers";
+import {
+  FAKE_USER_INSTALLATION_ID,
+  FAKE_ORG_LOGIN,
+  FAKE_REPO_NAME,
+  FAKE_EMPTY_REPO_NAME,
+} from "../mocks/github-handlers";
 
 test("an authenticated user can list repos and open a toolkit PR", async ({ page, context, baseURL }) => {
   await signInAs(context, baseURL!, "fake-user-access-token");
   await page.goto("/dashboard");
 
   await expect(page.getByText(FAKE_ORG_LOGIN)).toBeVisible();
-  await expect(page.getByText(`${FAKE_ORG_LOGIN}/${FAKE_REPO_NAME}`)).toBeVisible();
+  const row = page.locator("li").filter({ hasText: `${FAKE_ORG_LOGIN}/${FAKE_REPO_NAME}` });
+  await expect(row).toBeVisible();
 
-  await page.getByRole("button", { name: "Add stellar-build tools" }).click();
-  await expect(page.getByRole("link", { name: "View PR →" })).toBeVisible();
+  await row.getByRole("button", { name: "Add stellar-build tools" }).click();
+  await expect(row.getByRole("link", { name: "View PR →" })).toBeVisible();
+});
+
+test("shows a clear message when the target repository has no commits yet", async ({ page, context, baseURL }) => {
+  await signInAs(context, baseURL!, "fake-user-access-token");
+  await page.goto("/dashboard");
+
+  const row = page.locator("li").filter({ hasText: `${FAKE_ORG_LOGIN}/${FAKE_EMPTY_REPO_NAME}` });
+  await row.getByRole("button", { name: "Add stellar-build tools" }).click();
+  await expect(row.getByText(/no commits yet/i)).toBeVisible();
 });
 
 test("rejects a request for an installation the user does not own", async ({ context, baseURL }) => {

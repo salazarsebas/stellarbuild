@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 export const FAKE_USER_INSTALLATION_ID = 1001;
 export const FAKE_ORG_LOGIN = "acme-labs";
 export const FAKE_REPO_NAME = "widgets";
+export const FAKE_EMPTY_REPO_NAME = "empty-repo";
 
 export const handlers = [
   http.post("https://github.com/login/oauth/access_token", () =>
@@ -34,7 +35,10 @@ export const handlers = [
 
   http.get("https://api.github.com/installation/repositories", () =>
     HttpResponse.json({
-      repositories: [{ name: FAKE_REPO_NAME, owner: { login: FAKE_ORG_LOGIN } }],
+      repositories: [
+        { name: FAKE_REPO_NAME, owner: { login: FAKE_ORG_LOGIN } },
+        { name: FAKE_EMPTY_REPO_NAME, owner: { login: FAKE_ORG_LOGIN } },
+      ],
     })
   ),
 
@@ -42,9 +46,14 @@ export const handlers = [
     HttpResponse.json({ default_branch: "main" })
   ),
 
-  http.get("https://api.github.com/repos/:owner/:repo/git/ref/*", () =>
-    HttpResponse.json({ object: { sha: "base-sha" } })
-  ),
+  http.patch("https://api.github.com/repos/:owner/:repo", () => HttpResponse.json({})),
+
+  http.get("https://api.github.com/repos/:owner/:repo/git/ref/*", ({ params }) => {
+    if (params.repo === FAKE_EMPTY_REPO_NAME) {
+      return HttpResponse.json({ message: "Git Repository is empty." }, { status: 409 });
+    }
+    return HttpResponse.json({ object: { sha: "base-sha" } });
+  }),
 
   http.post("https://api.github.com/repos/:owner/:repo/git/trees", () =>
     HttpResponse.json({ sha: "tree-sha" })
