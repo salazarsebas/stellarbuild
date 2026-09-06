@@ -8,6 +8,7 @@
   border-radius: 999px;
   padding: 0.25rem;
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   z-index: 10;
 }
 
@@ -22,14 +23,19 @@
   background: transparent;
   color: var(--muted);
   cursor: pointer;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
 }
 
 .link:hover {
   color: var(--foreground);
+  background: var(--surface-hover);
 }
 
 .active {
   background: var(--background);
   color: var(--foreground);
+  box-shadow: var(--shadow-sm);
   cursor: default;
 }
