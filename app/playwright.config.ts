@@ -33,6 +33,7 @@ export default defineConfig({
     timeout: 180_000,
     env: {
       SESSION_SECRET: E2E_SESSION_SECRET,
+      NEXT_PUBLIC_GITHUB_APP_SLUG: "stellar-build-e2e",
       GITHUB_OAUTH_CLIENT_ID: "e2e-oauth-client-id",
       GITHUB_OAUTH_CLIENT_SECRET: "e2e-oauth-client-secret",
       GITHUB_APP_ID: "123456",
