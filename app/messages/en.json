@@ -1,11 +1,11 @@
 {
   "Metadata": {
     "title": "stellar-build",
-    "description": "Add the stellar-build Claude Code skills toolkit to a new or existing Stellar project in a couple of clicks. No CLI, no plugin install.",
-    "ogDescription": "Add the stellar-build Claude Code skills toolkit to a new or existing Stellar project in a couple of clicks."
+    "description": "Add the stellar-build development skills toolkit to a new or existing Stellar project in a couple of clicks. Works with Claude, Codex, Grok, Cursor, Gemini CLI, and more. No CLI, no plugin install.",
+    "ogDescription": "Add the stellar-build development skills toolkit to a new or existing Stellar project in a couple of clicks. Works with Claude, Codex, Grok, Cursor, Gemini CLI, and more."
   },
   "LandingPage": {
-    "badge": "Claude Code skills for Stellar",
+    "badge": "AI coding skills for Stellar",
     "title": "stellar-build",
     "subtitle": "Add a curated set of Stellar and Soroban development skills to a project in a couple of clicks. No CLI, no plugin install.",
     "newProjectLabel": "New project",

@@ -1,6 +1,6 @@
 # stellar-build
 
-Add the [stellar-build](https://github.com/salazarsebas/stellar-build-toolkit) Claude Code skills toolkit to a Stellar/Soroban project in a couple of clicks, no CLI or Claude Code plugin required.
+Add the [stellar-build](https://github.com/salazarsebas/stellar-build-toolkit) development skills toolkit to a Stellar/Soroban project in a couple of clicks. Works with Claude, Codex, Grok, Cursor, Gemini CLI, and more, no CLI or editor plugin required.
 
 Two ways to get the toolkit:
 

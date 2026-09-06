@@ -65,8 +65,8 @@ describe("addToolkitToRepo", () => {
 
     const commitCall = octokit.rest.git.createCommit.mock.calls[0][0];
     const prCall = octokit.rest.pulls.create.mock.calls[0][0];
-    expect(commitCall.message).toBe("feat: integrate stellar-build claude code skill");
-    expect(prCall.title).toBe("feat: integrate stellar-build claude code skill");
+    expect(commitCall.message).toBe("feat: integrate stellar-build toolkit");
+    expect(prCall.title).toBe("feat: integrate stellar-build toolkit");
   });
 
   it("mentions the selected target labels in the PR body", async () => {
