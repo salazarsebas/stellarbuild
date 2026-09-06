@@ -16,17 +16,29 @@ interface RepoRef {
   name: string;
 }
 
+type ReposState = RepoRef[] | "error";
+
 const APP_SLUG = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG ?? "";
 const DEFAULT_TARGETS = new Set<TargetKey>(["claude"]);
 
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  invalid_state: "Your sign-in session expired or was tampered with. Please try again.",
+  missing_config: "GitHub sign-in is not configured correctly. Please contact the site owner.",
+  token_exchange_failed: "GitHub could not verify your sign-in. Please try again.",
+};
+
 export default function DashboardPage() {
-  const [status, setStatus] = useState<"loading" | "signed-out" | "ready">("loading");
+  const [status, setStatus] = useState<"loading" | "signed-out" | "ready" | "error">("loading");
   const [installations, setInstallations] = useState<Installation[]>([]);
-  const [reposByInstallation, setReposByInstallation] = useState<Record<number, RepoRef[]>>({});
+  const [reposByInstallation, setReposByInstallation] = useState<Record<number, ReposState>>({});
   const [prUrls, setPrUrls] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
   const [selectedTargets, setSelectedTargets] = useState<Record<string, Set<TargetKey>>>({});
+  const [authError] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return new URLSearchParams(window.location.search).get("authError");
+  });
 
   useEffect(() => {
     fetch("/api/installations")
@@ -34,6 +46,9 @@ export default function DashboardPage() {
         if (res.status === 401) {
           setStatus("signed-out");
           return null;
+        }
+        if (!res.ok) {
+          throw new Error("Failed to load installations");
         }
         const data = await res.json();
         return data.installations as Installation[];
@@ -44,11 +59,21 @@ export default function DashboardPage() {
         setStatus("ready");
         installs.forEach((inst) => {
           fetch(`/api/repos?installation_id=${inst.id}`)
-            .then((res) => res.json())
-            .then((data) => {
-              setReposByInstallation((prev) => ({ ...prev, [inst.id]: data.repos ?? [] }));
+            .then(async (res) => {
+              if (!res.ok) throw new Error("Failed to load repos");
+              const data = await res.json();
+              return data.repos as RepoRef[];
+            })
+            .then((repos) => {
+              setReposByInstallation((prev) => ({ ...prev, [inst.id]: repos }));
+            })
+            .catch(() => {
+              setReposByInstallation((prev) => ({ ...prev, [inst.id]: "error" }));
             });
         });
+      })
+      .catch(() => {
+        setStatus("error");
       });
   }, []);
 
@@ -105,6 +130,23 @@ export default function DashboardPage() {
     );
   }
 
+  if (status === "error") {
+    return (
+      <main className={styles.main}>
+        <div className={styles.container}>
+          <span className={styles.badge}>stellar-build</span>
+          <h1 className={styles.title}>Something went wrong</h1>
+          <p className={styles.subtitle}>
+            We could not load your installations. Please try again.
+          </p>
+          <a className={styles.button} href="/dashboard">
+            Try again
+          </a>
+        </div>
+      </main>
+    );
+  }
+
   if (status === "signed-out") {
     return (
       <main className={styles.main}>
@@ -115,6 +157,11 @@ export default function DashboardPage() {
             Sign in with GitHub to see the accounts and repos where the
             toolkit can be added.
           </p>
+          {authError ? (
+            <p className={styles.errorText}>
+              {AUTH_ERROR_MESSAGES[authError] ?? "Sign-in failed. Please try again."}
+            </p>
+          ) : null}
           <a className={styles.button} href="/api/auth/login">
             Sign in with GitHub
           </a>
@@ -149,6 +196,8 @@ export default function DashboardPage() {
                 </h2>
                 {!repos ? (
                   <p className={styles.empty}>Loading repositories&#8230;</p>
+                ) : repos === "error" ? (
+                  <p className={styles.errorText}>Could not load repositories for this account.</p>
                 ) : (
                   <ul className={styles.list}>
                     {repos.map((repo) => {
