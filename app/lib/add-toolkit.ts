@@ -6,7 +6,7 @@ export interface AddToolkitResult {
   branch: string;
 }
 
-const COMMIT_MESSAGE = "feat: integrate stellar-build claude code skill";
+const COMMIT_MESSAGE = "feat: integrate stellar-build toolkit";
 
 export class EmptyRepositoryError extends Error {
   constructor() {
@@ -95,9 +95,9 @@ function buildPrBody(targetLabels: string): string {
   return [
     "## Summary",
     "",
-    `This pull request adds the [stellar-build](https://github.com/salazarsebas/stellar-build-toolkit) Claude Code skills toolkit to this repository, configured for ${targetLabels}.`,
+    `This pull request adds the [stellar-build](https://github.com/salazarsebas/stellar-build-toolkit) development skills toolkit to this repository, configured for ${targetLabels}.`,
     "",
-    "stellar-build is a curated collection of skills for Stellar and Soroban development, covering smart contract patterns, wallet integrations, asset issuance, data access, and the supporting process and agent skills that go with them.",
+    "stellar-build is a curated collection of skills for Stellar and Soroban development, covering smart contract patterns, wallet integrations, asset issuance, data access, and the supporting process and agent skills that go with them. It works the same way across AI coding tools, including Claude, Codex, Grok, Cursor, and Gemini CLI.",
     "",
     "## What's included",
     "",
