@@ -28,6 +28,15 @@ test("shows a clear message when the target repository has no commits yet", asyn
   await expect(row.getByText(/no commits yet/i)).toBeVisible();
 });
 
+test("the install-on-another-account link opens in a new tab", async ({ page, context, baseURL }) => {
+  await signInAs(context, baseURL!, "fake-user-access-token");
+  await page.goto("/dashboard");
+
+  const link = page.getByRole("link", { name: "Install on another account" });
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("href", /^https:\/\/github\.com\/apps\//);
+});
+
 test("rejects a request for an installation the user does not own", async ({ context, baseURL }) => {
   await signInAs(context, baseURL!, "fake-user-access-token");
   const res = await context.request.post("/api/add-toolkit", {

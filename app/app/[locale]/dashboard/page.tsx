@@ -179,7 +179,11 @@ export default function DashboardPage() {
         {installations.length === 0 ? (
           <p className={styles.empty}>
             {t("noInstallations")}{" "}
-            {installUrl ? <a href={installUrl}>{t("installLink")}</a> : null}
+            {installUrl ? (
+              <a href={installUrl} target="_blank" rel="noreferrer">
+                {t("installLink")}
+              </a>
+            ) : null}
           </p>
         ) : (
           installations.map((inst) => {
@@ -250,7 +254,7 @@ export default function DashboardPage() {
         )}
 
         {installUrl ? (
-          <a className={styles.footerLink} href={installUrl}>
+          <a className={styles.footerLink} href={installUrl} target="_blank" rel="noreferrer">
             {t("installOnAnother")}
           </a>
         ) : null}

@@ -16,7 +16,7 @@ export default async function HomePage() {
         <p className={styles.subtitle}>{t("subtitle")}</p>
 
         <div className={styles.grid}>
-          <a href={newRepoUrl} className={styles.card}>
+          <a href={newRepoUrl} className={styles.card} target="_blank" rel="noreferrer">
             <span className={styles.cardLabel}>{t("newProjectLabel")}</span>
             <h2 className={styles.cardTitle}>{t("newProjectTitle")}</h2>
             <p className={styles.cardText}>{t("newProjectText")}</p>
@@ -35,6 +35,8 @@ export default async function HomePage() {
         <a
           className={styles.footerLink}
           href="https://github.com/salazarsebas/stellar-build-toolkit"
+          target="_blank"
+          rel="noreferrer"
         >
           {t("footerLink")}
         </a>
