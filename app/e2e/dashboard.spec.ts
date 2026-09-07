@@ -11,7 +11,7 @@ test("an authenticated user can list repos and open a toolkit PR", async ({ page
   await signInAs(context, baseURL!, "fake-user-access-token");
   await page.goto("/dashboard");
 
-  await expect(page.getByText(FAKE_ORG_LOGIN)).toBeVisible();
+  await expect(page.getByRole("heading", { name: `${FAKE_ORG_LOGIN} Organization` })).toBeVisible();
   const row = page.locator("li").filter({ hasText: `${FAKE_ORG_LOGIN}/${FAKE_REPO_NAME}` });
   await expect(row).toBeVisible();
 
