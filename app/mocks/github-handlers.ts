@@ -4,6 +4,7 @@ export const FAKE_USER_INSTALLATION_ID = 1001;
 export const FAKE_ORG_LOGIN = "acme-labs";
 export const FAKE_REPO_NAME = "widgets";
 export const FAKE_EMPTY_REPO_NAME = "empty-repo";
+export const EXPIRED_ACCESS_TOKEN = "expired-user-access-token";
 
 export const handlers = [
   http.post("https://github.com/login/oauth/access_token", () =>
@@ -18,8 +19,11 @@ export const handlers = [
     })
   ),
 
-  http.get("https://api.github.com/user/installations", () =>
-    HttpResponse.json({
+  http.get("https://api.github.com/user/installations", ({ request }) => {
+    if (request.headers.get("authorization")?.includes(EXPIRED_ACCESS_TOKEN)) {
+      return HttpResponse.json({ message: "Bad credentials" }, { status: 401 });
+    }
+    return HttpResponse.json({
       installations: [
         {
           id: FAKE_USER_INSTALLATION_ID,
@@ -30,8 +34,8 @@ export const handlers = [
           },
         },
       ],
-    })
-  ),
+    });
+  }),
 
   http.get("https://api.github.com/installation/repositories", () =>
     HttpResponse.json({

@@ -1,5 +1,6 @@
 import { getToolkitFiles, type ToolkitFile } from "./toolkit-files";
 import { TARGETS, type TargetKey } from "./targets";
+import { hasStatus } from "./octokit-errors";
 
 export interface AddToolkitResult {
   prUrl: string;
@@ -77,10 +78,6 @@ interface AddToolkitOctokit {
 function branchNameForTargets(targets: TargetKey[]): string {
   const sorted = [...targets].sort();
   return `stellar-build/add-toolkit-${sorted.join("-")}`;
-}
-
-function hasStatus(err: unknown, status: number): boolean {
-  return typeof err === "object" && err !== null && "status" in err && (err as { status?: unknown }).status === status;
 }
 
 function isDuplicatePullRequestError(err: unknown): boolean {

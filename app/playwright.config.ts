@@ -39,6 +39,11 @@ export default defineConfig({
       GITHUB_APP_ID: "123456",
       GITHUB_APP_PRIVATE_KEY: privateKey,
       E2E_MOCK_GITHUB: "1",
+      // Low on purpose: existing specs share one fake access token and make
+      // well under 5 add-toolkit calls between them, so this only trips for
+      // the dedicated rate-limit spec, which uses its own token.
+      ADD_TOOLKIT_RATE_LIMIT: "5",
+      ADD_TOOLKIT_RATE_LIMIT_WINDOW_MS: "60000",
     },
   },
 });

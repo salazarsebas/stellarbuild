@@ -4,10 +4,21 @@ import { getUserOctokit, listUserInstallations } from "@/lib/user-installations"
 import { getInstallationOctokit } from "@/lib/github-app";
 import { addToolkitToRepo } from "@/lib/add-toolkit";
 import { assertOwnsInstallation } from "@/lib/authorize-installation";
+import { withTokenRefresh } from "@/lib/with-token-refresh";
+import { isRateLimited } from "@/lib/rate-limit";
 import { errorResponse } from "@/lib/http-errors";
 import { isTargetKey, type TargetKey } from "@/lib/targets";
 
 export const maxDuration = 60;
+
+function envNumber(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+const RATE_LIMIT = envNumber(process.env.ADD_TOOLKIT_RATE_LIMIT, 20);
+const RATE_LIMIT_WINDOW_MS = envNumber(process.env.ADD_TOOLKIT_RATE_LIMIT_WINDOW_MS, 10 * 60 * 1000);
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -35,9 +46,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
+  if (isRateLimited(session.accessToken, RATE_LIMIT, RATE_LIMIT_WINDOW_MS)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a few minutes and try again." },
+      { status: 429 }
+    );
+  }
+
   try {
-    const userOctokit = getUserOctokit(session.accessToken);
-    const installations = await listUserInstallations(userOctokit);
+    const installations = await withTokenRefresh(
+      session,
+      (accessToken) => listUserInstallations(getUserOctokit(accessToken)),
+      { clientId: process.env.GITHUB_OAUTH_CLIENT_ID, clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET }
+    );
     assertOwnsInstallation(installationId, installations);
 
     const octokit = await getInstallationOctokit(installationId);
