@@ -4,6 +4,7 @@ import { getUserOctokit, listUserInstallations } from "@/lib/user-installations"
 import { getInstallationOctokit } from "@/lib/github-app";
 import { listInstallationRepos } from "@/lib/list-repos";
 import { assertOwnsInstallation } from "@/lib/authorize-installation";
+import { withTokenRefresh } from "@/lib/with-token-refresh";
 import { errorResponse } from "@/lib/http-errors";
 
 export async function GET(req: NextRequest) {
@@ -18,8 +19,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const userOctokit = getUserOctokit(session.accessToken);
-    const installations = await listUserInstallations(userOctokit);
+    const installations = await withTokenRefresh(
+      session,
+      (accessToken) => listUserInstallations(getUserOctokit(accessToken)),
+      { clientId: process.env.GITHUB_OAUTH_CLIENT_ID, clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET }
+    );
     assertOwnsInstallation(installationId, installations);
 
     const octokit = await getInstallationOctokit(installationId);
